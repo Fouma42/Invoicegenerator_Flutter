@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:invoivoicegenerator/invoice.dart';
 import 'database_helper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -228,7 +229,10 @@ class _SettingsPageState extends State<SettingsPage> {
           
              const  SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: _saveSettings,
+                onPressed: (){
+                  _saveSettings();
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const InvoicePage()),);
+                },
                 child: const Text('Save Settings'),
               ),
             ],
