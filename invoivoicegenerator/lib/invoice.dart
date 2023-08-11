@@ -20,6 +20,9 @@ class InvoicePageState extends State<InvoicePage> {
   final TextEditingController _hausnummerController = TextEditingController();
   final TextEditingController _plzController = TextEditingController();
   final TextEditingController _ortController = TextEditingController();
+  final TextEditingController _pos1Controller = TextEditingController();
+  final TextEditingController _pos2Controller = TextEditingController();
+  final TextEditingController _pos3Controller = TextEditingController();
 
   Future<File> _generatePDF() async {
     final pdf = pw.Document();
@@ -27,15 +30,70 @@ class InvoicePageState extends State<InvoicePage> {
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
-          return pw.Center(
-            child: pw.Column(
-              children: [
-                pw.Text('Rechnungsdaten'),
-                pw.Text('Name: ${_nameController.text}'),
-                pw.Text('Nachname: ${_nachnameController.text}'),
-                // ... Weitere Texte basierend auf den Controllern
-              ],
-            ),
+          return pw.Column(
+            children: [
+              //Rechnungsersteller adresse
+              pw.Row(
+                children: [
+                  pw.Text("Name"),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text("Nachname"),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text("Strasse"),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text("Hausnummer"),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text("PLZ"),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text("ORT"),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text("Telefon"),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text("E-Mail"),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text("Webadresse"),
+                ],
+              ),
+
+              //Ab hier kundenadresse
+              pw.Padding(padding: const pw.EdgeInsets.only(top: 25.0)),
+              pw.Row(
+                children: [
+                  pw.Text(_nameController.text),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text(_nachnameController.text),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text(_strasseController.text),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text(_hausnummerController.text),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text(_plzController.text),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text(_ortController.text),
+                ],
+              ),
+            ],
           );
         },
       ),
@@ -47,16 +105,18 @@ class InvoicePageState extends State<InvoicePage> {
     // Fluttertoast.showToast(msg: 'PDF erstellt: ${file.path}');
     return file;
   }
-    gotTo(file){
-          Navigator.push(
+
+  gotTo(file) {
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PdfViewerPage(
-          pdfPath:  file.path,
+          pdfPath: file.path,
         ),
       ),
     );
-    }
+  }
+
   @override
   void dispose() {
     // Dispose the controllers when the widget is removed from the tree
@@ -66,6 +126,9 @@ class InvoicePageState extends State<InvoicePage> {
     _hausnummerController.dispose();
     _plzController.dispose();
     _ortController.dispose();
+    _pos1Controller.dispose();
+    _pos2Controller.dispose();
+    _pos3Controller.dispose();
     super.dispose();
   }
 
@@ -154,9 +217,9 @@ class InvoicePageState extends State<InvoicePage> {
                   border: Border.all(color: Colors.blue),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: const TextField(
-                  maxLines: null,
-                  decoration: InputDecoration(labelText: 'Position 1'),
+                child: TextField(
+                  controller: _pos1Controller,
+                  decoration: const InputDecoration(labelText: 'Position 1'),
                 ),
               ),
               const Padding(
@@ -167,9 +230,9 @@ class InvoicePageState extends State<InvoicePage> {
                   border: Border.all(color: Colors.blue),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: const TextField(
-                  maxLines: null,
-                  decoration: InputDecoration(labelText: 'Position 2'),
+                child: TextField(
+                  controller: _pos2Controller,
+                  decoration: const InputDecoration(labelText: 'Position 2'),
                 ),
               ),
               const Padding(
@@ -180,35 +243,23 @@ class InvoicePageState extends State<InvoicePage> {
                   border: Border.all(color: Colors.blue),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: const TextField(
-                  maxLines: null,
-                  decoration: InputDecoration(labelText: 'Position 3'),
+                child: TextField(
+                  controller: _pos3Controller,
+                  decoration: const InputDecoration(labelText: 'Position 3'),
                 ),
               ),
               const SizedBox(height: 16.0),
-              
-            ElevatedButton(
-  onPressed: () async {
-    // Capture the BuildContext outside the async block
+              ElevatedButton(
+                onPressed: () async {
+                  // Capture the BuildContext outside the async block
+                  final File file = await _generatePDF();
 
+                  // Use the captured BuildContext inside the async block
 
-    // Access the text from the controllers
-    String name = _nameController.text;
-    String nachname = _nachnameController.text;
-    String strasse = _strasseController.text;
-    String hausnummer = _hausnummerController.text;
-    String plz = _plzController.text;
-    String ort = _ortController.text;
-
-     final File file = await _generatePDF();
-    
-    // Use the captured BuildContext inside the async block
-
-gotTo(file);
-  },
-  child: const Text('Save Settings'),
-),
-
+                  gotTo(file);
+                },
+                child: const Text('Save Settings'),
+              ),
             ],
           ),
         ),
