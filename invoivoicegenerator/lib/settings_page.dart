@@ -27,6 +27,8 @@ class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _emailController = TextEditingController();
 
 
+   
+
   void _saveSettings() async {
     if (_formKey.currentState!.validate()) {
       String name = _nameController.text.trim();
@@ -72,6 +74,11 @@ class _SettingsPageState extends State<SettingsPage> {
     );
     }
   }
+
+  gotToInvoicePage(){
+     Navigator.push(context, MaterialPageRoute(builder: (context) => const InvoicePage()),);
+  }
+
 
 
   @override
@@ -229,9 +236,12 @@ class _SettingsPageState extends State<SettingsPage> {
           
              const  SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: (){
-                  _saveSettings();
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const InvoicePage()),);
+                onPressed: () async{
+                  bool settingsAvailable = await DatabaseHelper.instance.settingsAvailable();
+                  if(!settingsAvailable){
+                     _saveSettings();
+                  }                 
+                 gotToInvoicePage();
                 },
                 child: const Text('Save Settings'),
               ),
@@ -240,5 +250,22 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ),
     );
+  }
+  
+  @override
+  void dispose() {     
+   _bicController.dispose();
+   _emailController.dispose();
+   _hausNummerController.dispose();
+   _nachNameController.dispose();
+   _nameController.dispose();
+   _steuernummerController.dispose();
+   _strasseController.dispose();
+   _ortController.dispose();
+   _plzController.dispose();
+   _telefonnummerController.dispose();
+   _websiteUrlController.dispose();
+   _ibanController.dispose();
+  super.dispose();
   }
 }

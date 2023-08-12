@@ -81,4 +81,11 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.query('settings');
   }
+
+Future<bool> settingsAvailable() async {
+  Database db = await instance.database;
+  List<Map<String, dynamic>> settingsList = await db.query('settings');
+  return settingsList.isNotEmpty; // Gibt true zurück, wenn Einstellungen vorhanden sind, sonst false
+}
+
 }

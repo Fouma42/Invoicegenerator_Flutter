@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'settings_page.dart';
+import 'package:invoivoicegenerator/invoice.dart';
+import 'database_helper.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure that the Flutter engine is initialized
+  bool settingsAvailable = await DatabaseHelper.instance.settingsAvailable();
+
+  runApp(MyApp(settingsAvailable: settingsAvailable));
 }
+
 class MyApp extends StatelessWidget {
-   const MyApp({Key? key}) : super(key: key);
+  final bool settingsAvailable;
+
+  const MyApp({Key? key, required this.settingsAvailable}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,11 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const SettingsPage(), // Hier wird die Einstellungsseite als Startseite verwendet
+      home: settingsAvailable ? const InvoicePage() : const SettingsPage(),
     );
   }
 }
-
-
-
-

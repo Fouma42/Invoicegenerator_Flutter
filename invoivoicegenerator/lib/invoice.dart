@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:invoivoicegenerator/pdf_view.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'database_helper.dart';
+import 'dart:developer';
+
 
 class InvoicePage extends StatefulWidget {
   const InvoicePage({Key? key}) : super(key: key);
@@ -23,8 +24,42 @@ class InvoicePageState extends State<InvoicePage> {
   final TextEditingController _pos1Controller = TextEditingController();
   final TextEditingController _pos2Controller = TextEditingController();
   final TextEditingController _pos3Controller = TextEditingController();
+  String userName = "";
+  String userSurnName = "";
+  String userStreet = "";
+  String userNumber = "";
+  String userPLZ = "";
+  String userOrt = "";
+  String useSteuernummer = "";
+  String userIban = "";
+  String userBIC = "";
+  String userWebUrl = "";
+  String userTelefon = "";
+  String userEmail = "";
 
   Future<File> _generatePDF() async {
+    final DatabaseHelper dbHelper = DatabaseHelper.instance;
+    List<Map<String, dynamic>> settingsList = await dbHelper.getAllSettings();
+   
+   
+    // Ausgabe der abgerufenen Einstellungen
+    for (var settings in settingsList) {
+      userName = settings['name'];
+      userSurnName = settings['nachName'];
+      userStreet = settings['strasse'];
+      userNumber = settings['hausnummer'];
+      userPLZ = settings['plz'];
+      userOrt = settings['ort'];
+      useSteuernummer = settings['steuernummer'];
+      userIban = settings['iban'];
+      userBIC = settings['bic'];
+      userWebUrl = settings['websiteUrl'];
+      userTelefon = settings['telefonNummer'];
+      userEmail = settings['email'];
+       log('bin in for');
+       log(useSteuernummer);
+    }  
+
     final pdf = pw.Document();
 
     pdf.addPage(
@@ -35,38 +70,38 @@ class InvoicePageState extends State<InvoicePage> {
               //Rechnungsersteller adresse
               pw.Row(
                 children: [
-                  pw.Text("Name"),
+                  pw.Text(userName),
                   pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text("Nachname"),
+                  pw.Text(userSurnName),
                 ],
               ),
               pw.Row(
                 children: [
-                  pw.Text("Strasse"),
+                  pw.Text(userStreet),
                   pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text("Hausnummer"),
+                  pw.Text(userNumber),
                 ],
               ),
               pw.Row(
                 children: [
-                  pw.Text("PLZ"),
+                  pw.Text(userPLZ),
                   pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text("ORT"),
+                  pw.Text(userOrt),
                 ],
               ),
               pw.Row(
                 children: [
-                  pw.Text("Telefon"),
+                  pw.Text(userTelefon),
                 ],
               ),
               pw.Row(
                 children: [
-                  pw.Text("E-Mail"),
+                  pw.Text(userEmail),
                 ],
               ),
               pw.Row(
                 children: [
-                  pw.Text("Webadresse"),
+                  pw.Text(userWebUrl),
                 ],
               ),
 
@@ -117,20 +152,7 @@ class InvoicePageState extends State<InvoicePage> {
     );
   }
 
-  @override
-  void dispose() {
-    // Dispose the controllers when the widget is removed from the tree
-    _nameController.dispose();
-    _nachnameController.dispose();
-    _strasseController.dispose();
-    _hausnummerController.dispose();
-    _plzController.dispose();
-    _ortController.dispose();
-    _pos1Controller.dispose();
-    _pos2Controller.dispose();
-    _pos3Controller.dispose();
-    super.dispose();
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -265,5 +287,19 @@ class InvoicePageState extends State<InvoicePage> {
         ),
       ),
     );
+  }
+    @override
+  void dispose() {
+    // Dispose the controllers when the widget is removed from the tree
+    _nameController.dispose();
+    _nachnameController.dispose();
+    _strasseController.dispose();
+    _hausnummerController.dispose();
+    _plzController.dispose();
+    _ortController.dispose();
+    _pos1Controller.dispose();
+    _pos2Controller.dispose();
+    _pos3Controller.dispose();
+    super.dispose();
   }
 }
