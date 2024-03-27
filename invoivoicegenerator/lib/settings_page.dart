@@ -29,7 +29,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void _saveSettings() async {
     if (_formKey.currentState!.validate()) {
-      String name = _nameController.text.trim();
+      String name = _selectedName.toString();
       String nachName = _nachNameController.text.trim();
       String strasse = _strasseController.text.trim();
       String hausnummer = _hausNummerController.text.trim();
@@ -70,7 +70,7 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  gotToInvoicePage() {
+  navigateToInvoicePage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const InvoicePage()),
@@ -244,12 +244,8 @@ class _SettingsPageState extends State<SettingsPage> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () async {
-                  bool settingsAvailable =
-                      await DatabaseHelper.instance.settingsAvailable();
-                  if (!settingsAvailable) {
-                    _saveSettings();
-                  }
-                  gotToInvoicePage();
+                  _saveSettings();
+                  navigateToInvoicePage();
                 },
                 child: const Text('Save Settings'),
               ),
