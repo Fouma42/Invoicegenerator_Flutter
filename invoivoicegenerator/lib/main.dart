@@ -22,7 +22,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: settingsAvailable ? const InvoicePage() : const SettingsPage(),
+     // home: settingsAvailable ? const InvoicePage() : const SettingsPage(),
+     home: const SettingsPage(),
     );
   }
 }

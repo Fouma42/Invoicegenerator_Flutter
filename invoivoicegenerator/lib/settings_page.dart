@@ -3,11 +3,10 @@ import 'package:invoivoicegenerator/invoice.dart';
 import 'database_helper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
   @override
- State<SettingsPage>createState() => _SettingsPageState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
@@ -26,8 +25,7 @@ class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _bicController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
-
-   
+  String? _selectedName;
 
   void _saveSettings() async {
     if (_formKey.currentState!.validate()) {
@@ -43,43 +41,41 @@ class _SettingsPageState extends State<SettingsPage> {
       String iban = _ibanController.text.trim();
       String bic = _bicController.text.trim();
       String email = _emailController.text.trim();
-      
 
       Map<String, dynamic> settings = {
         'name': name,
         'nachName': nachName,
-        'strasse':strasse,
-        'hausnummer':hausnummer,
-        'plz':plz,
-        'ort':ort,
-        'steuernummer':steuernummer,
+        'strasse': strasse,
+        'hausnummer': hausnummer,
+        'plz': plz,
+        'ort': ort,
+        'steuernummer': steuernummer,
         'iban': iban,
         'bic': bic,
-        'websiteUrl':websiteUrl,
-        'telefonNummer':telefonNummer,
-        'email': email,        
+        'websiteUrl': websiteUrl,
+        'telefonNummer': telefonNummer,
+        'email': email,
       };
 
       await DatabaseHelper.instance.insertSettings(settings);
 
-      
       // Show a SnackBar or navigate to another page to indicate success.
-  Fluttertoast.showToast(
-        msg: "Ihre Daten wurden erfolgreich gespeichert",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        textColor: Colors.white,
-        fontSize: 16.0
-    );
+      Fluttertoast.showToast(
+          msg: "Ihre Daten wurden erfolgreich gespeichert",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          textColor: Colors.white,
+          fontSize: 16.0);
     }
   }
 
-  gotToInvoicePage(){
-     Navigator.push(context, MaterialPageRoute(builder: (context) => const InvoicePage()),);
+  gotToInvoicePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const InvoicePage()),
+    );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -92,17 +88,29 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
-                controller: _nameController,
+              DropdownButtonFormField<String>(
+                value: _selectedName,
+                items: <String>['Muammer', 'Hatun'].map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedName = newValue;
+                    setSteuernummer();
+                  });
+                },
                 decoration: const InputDecoration(labelText: 'Name'),
                 validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Bitte geben Sie Ihren Namen ein';
+                  if (value == null) {
+                    return 'Bitte wählen Sie Ihren Namen aus';
                   }
                   return null;
                 },
               ),
-                  TextFormField(
+              TextFormField(
                 controller: _nachNameController,
                 decoration: const InputDecoration(labelText: 'Nachname'),
                 validator: (value) {
@@ -112,7 +120,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   return null;
                 },
               ),
-                
               Row(
                 children: [
                   Expanded(
@@ -127,11 +134,12 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 16), 
+                  const SizedBox(width: 16),
                   Expanded(
                     child: TextFormField(
                       controller: _hausNummerController,
-                      decoration: const InputDecoration(labelText: 'Hausnummer'),
+                      decoration:
+                          const InputDecoration(labelText: 'Hausnummer'),
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Bitte geben Sie Ihre Hausnummer ein';
@@ -142,37 +150,36 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ],
               ),
-  
               Row(
                 children: [
                   Expanded(
-                    child:  TextFormField(
-                controller: _plzController,
-                decoration: const InputDecoration(labelText: 'PLZ'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Bitte geben Sie Ihre PLZ ein';
-                  }
-                  return null;
-                },
-              ),
+                    child: TextFormField(
+                      controller: _plzController,
+                      decoration: const InputDecoration(labelText: 'PLZ'),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Bitte geben Sie Ihre PLZ ein';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
-                 const  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Expanded(
-                    child:             TextFormField(
-                controller: _ortController,
-                decoration: const InputDecoration(labelText: 'Ort'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Bitte geben Sie Ihren Ort ein';
-                  }
-                  return null;
-                },
-              ),
+                    child: TextFormField(
+                      controller: _ortController,
+                      decoration: const InputDecoration(labelText: 'Ort'),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Bitte geben Sie Ihren Ort ein';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                 ],
-              ),     
-                  TextFormField(
+              ),
+              TextFormField(
                 controller: _telefonnummerController,
                 decoration: const InputDecoration(labelText: 'Telefonnummer'),
                 validator: (value) {
@@ -182,17 +189,18 @@ class _SettingsPageState extends State<SettingsPage> {
                   return null;
                 },
               ),
-                  TextFormField(
+              TextFormField(
                 controller: _steuernummerController,
                 decoration: const InputDecoration(labelText: 'Steuernummer'),
                 validator: (value) {
                   if (value!.isEmpty) {
                     return 'Bitte geben Sie Ihre Steuernummer ein';
                   }
+
                   return null;
                 },
               ),
-                  TextFormField(
+              TextFormField(
                 controller: _ibanController,
                 decoration: const InputDecoration(labelText: 'IBAN'),
                 validator: (value) {
@@ -202,7 +210,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   return null;
                 },
               ),
-                  TextFormField(
+              TextFormField(
                 controller: _bicController,
                 decoration: const InputDecoration(labelText: 'BIC'),
                 validator: (value) {
@@ -212,7 +220,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   return null;
                 },
               ),
-                  TextFormField(
+              TextFormField(
                 controller: _websiteUrlController,
                 decoration: const InputDecoration(labelText: 'Website URL'),
                 validator: (value) {
@@ -233,15 +241,15 @@ class _SettingsPageState extends State<SettingsPage> {
                   return null;
                 },
               ),
-          
-             const  SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: () async{
-                  bool settingsAvailable = await DatabaseHelper.instance.settingsAvailable();
-                  if(!settingsAvailable){
-                     _saveSettings();
-                  }                 
-                 gotToInvoicePage();
+                onPressed: () async {
+                  bool settingsAvailable =
+                      await DatabaseHelper.instance.settingsAvailable();
+                  if (!settingsAvailable) {
+                    _saveSettings();
+                  }
+                  gotToInvoicePage();
                 },
                 child: const Text('Save Settings'),
               ),
@@ -251,21 +259,31 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
-  
+
   @override
-  void dispose() {     
-   _bicController.dispose();
-   _emailController.dispose();
-   _hausNummerController.dispose();
-   _nachNameController.dispose();
-   _nameController.dispose();
-   _steuernummerController.dispose();
-   _strasseController.dispose();
-   _ortController.dispose();
-   _plzController.dispose();
-   _telefonnummerController.dispose();
-   _websiteUrlController.dispose();
-   _ibanController.dispose();
-  super.dispose();
+  void dispose() {
+    _bicController.dispose();
+    _emailController.dispose();
+    _hausNummerController.dispose();
+    _nachNameController.dispose();
+    _nameController.dispose();
+    _steuernummerController.dispose();
+    _strasseController.dispose();
+    _ortController.dispose();
+    _plzController.dispose();
+    _telefonnummerController.dispose();
+    _websiteUrlController.dispose();
+    _ibanController.dispose();
+    super.dispose();
+  }
+
+  void setSteuernummer() {
+    if (_selectedName == 'Hatun') {
+      _steuernummerController.text = '180180';
+      _emailController.text = 'h.dalkilic@outlook.de';
+    } else {
+      _steuernummerController.text = '190190';
+      _emailController.text = 'muammerdalkilic@outlook.de';
+    }
   }
 }

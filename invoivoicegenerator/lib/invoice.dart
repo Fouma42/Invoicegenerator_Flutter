@@ -6,7 +6,6 @@ import 'dart:io';
 import 'database_helper.dart';
 import 'dart:developer';
 
-
 class InvoicePage extends StatefulWidget {
   const InvoicePage({Key? key}) : super(key: key);
 
@@ -24,6 +23,9 @@ class InvoicePageState extends State<InvoicePage> {
   final TextEditingController _pos1Controller = TextEditingController();
   final TextEditingController _pos2Controller = TextEditingController();
   final TextEditingController _pos3Controller = TextEditingController();
+  final TextEditingController _pos1BetragController = TextEditingController();
+  final TextEditingController _pos2BetragController = TextEditingController();
+  final TextEditingController _pos3BetragController = TextEditingController();
   String userName = "";
   String userSurnName = "";
   String userStreet = "";
@@ -40,8 +42,7 @@ class InvoicePageState extends State<InvoicePage> {
   Future<File> _generatePDF() async {
     final DatabaseHelper dbHelper = DatabaseHelper.instance;
     List<Map<String, dynamic>> settingsList = await dbHelper.getAllSettings();
-   
-   
+
     // Ausgabe der abgerufenen Einstellungen
     for (var settings in settingsList) {
       userName = settings['name'];
@@ -56,9 +57,10 @@ class InvoicePageState extends State<InvoicePage> {
       userWebUrl = settings['websiteUrl'];
       userTelefon = settings['telefonNummer'];
       userEmail = settings['email'];
-       log('bin in for');
-       log(useSteuernummer);
-    }  
+      log('bin in for');
+      log(useSteuernummer);
+      stderr.writeln('print me');
+    }
 
     final pdf = pw.Document();
 
@@ -128,6 +130,28 @@ class InvoicePageState extends State<InvoicePage> {
                   pw.Text(_ortController.text),
                 ],
               ),
+
+              pw.Row(
+                children: [
+                  pw.Text(_pos1Controller.text),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text(_pos1BetragController.text),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text(_pos2Controller.text),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text(_pos2BetragController.text),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text(_pos3Controller.text),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text(_pos3BetragController.text),
+                ],
+              ),
             ],
           );
         },
@@ -151,8 +175,6 @@ class InvoicePageState extends State<InvoicePage> {
       ),
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -234,41 +256,110 @@ class InvoicePageState extends State<InvoicePage> {
               const Padding(
                 padding: EdgeInsets.all(16.0),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: TextField(
-                  controller: _pos1Controller,
-                  decoration: const InputDecoration(labelText: 'Position 1'),
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    flex:
+                        4, // Erstes Textfeld ist doppelt so breit wie das zweite
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blue),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: TextField(
+                        controller: _pos1Controller,
+                        decoration:
+                            const InputDecoration(labelText: 'Position 1'),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10), // Abstand zwischen den Containern
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blue),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: TextField(
+                        controller: _pos1BetragController,
+                        textAlign: TextAlign.right,
+                        decoration: const InputDecoration(labelText: 'Betrag'),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const Padding(
                 padding: EdgeInsets.all(16.0),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: TextField(
-                  controller: _pos2Controller,
-                  decoration: const InputDecoration(labelText: 'Position 2'),
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    flex:
+                        4, // Erstes Textfeld ist doppelt so breit wie das zweite
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blue),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: TextField(
+                        controller: _pos2Controller,
+                        decoration:
+                            const InputDecoration(labelText: 'Position 2'),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10), // Abstand zwischen den Containern
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blue),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: TextField(
+                        controller: _pos2BetragController,
+                        textAlign: TextAlign.right,
+                        decoration: const InputDecoration(labelText: 'Betrag'),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const Padding(
                 padding: EdgeInsets.all(16.0),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: TextField(
-                  controller: _pos3Controller,
-                  decoration: const InputDecoration(labelText: 'Position 3'),
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    flex:
+                        4, // Erstes Textfeld ist doppelt so breit wie das zweite
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blue),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: TextField(
+                        controller: _pos3Controller,
+                        decoration:
+                            const InputDecoration(labelText: 'Position 3'),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10), // Abstand zwischen den Containern
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blue),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: TextField(
+                        controller: _pos3BetragController,
+                        textAlign: TextAlign.right,
+                        decoration: const InputDecoration(labelText: 'Betrag'),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16.0),
               ElevatedButton(
@@ -288,7 +379,8 @@ class InvoicePageState extends State<InvoicePage> {
       ),
     );
   }
-    @override
+
+  @override
   void dispose() {
     // Dispose the controllers when the widget is removed from the tree
     _nameController.dispose();
@@ -300,6 +392,9 @@ class InvoicePageState extends State<InvoicePage> {
     _pos1Controller.dispose();
     _pos2Controller.dispose();
     _pos3Controller.dispose();
+    _pos1BetragController.dispose();
+    _pos2BetragController.dispose();
+    _pos3BetragController.dispose();
     super.dispose();
   }
 }

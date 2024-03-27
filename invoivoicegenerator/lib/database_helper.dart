@@ -74,6 +74,7 @@ class DatabaseHelper {
 
   Future<int> insertSettings(Map<String, dynamic> row) async {
     Database db = await instance.database;
+    await db.delete('settings');
     return await db.insert('settings', row);
   }
 
@@ -82,10 +83,10 @@ class DatabaseHelper {
     return await db.query('settings');
   }
 
-Future<bool> settingsAvailable() async {
-  Database db = await instance.database;
-  List<Map<String, dynamic>> settingsList = await db.query('settings');
-  return settingsList.isNotEmpty; // Gibt true zurück, wenn Einstellungen vorhanden sind, sonst false
-}
-
+  Future<bool> settingsAvailable() async {
+    Database db = await instance.database;
+    List<Map<String, dynamic>> settingsList = await db.query('settings');
+    return settingsList
+        .isNotEmpty; // Gibt true zurück, wenn Einstellungen vorhanden sind, sonst false
+  }
 }
