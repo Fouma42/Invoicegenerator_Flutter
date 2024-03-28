@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import '../model/settings.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._();
@@ -23,14 +24,14 @@ class DatabaseHelper {
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE settings(     
+      CREATE TABLE settings(  
+        steuernummer TEXT PRIMARY KEY,   
         name TEXT,
         nachName TEXT,
         strasse TEXT,
         hausnummer TEXT,
         plz TEXT,
         ort TEXT,
-        steuernummer TEXT,
         iban TEXT,
         bic TEXT,
         websiteUrl TEXT,
@@ -74,13 +75,34 @@ class DatabaseHelper {
 
   Future<int> insertSettings(Map<String, dynamic> row) async {
     Database db = await instance.database;
-    await db.delete('settings');
+    //await db.delete('settings');
     return await db.insert('settings', row);
   }
 
   Future<List<Map<String, dynamic>>> getAllSettings() async {
     Database db = await instance.database;
     return await db.query('settings');
+  }
+
+  Future<List<Settings>> getUsers() async {
+    final List<Map<String, dynamic>> maps = await _database!.query('settings');
+
+    return List.generate(maps.length, (i) {
+      return Settings(
+        steuernummer: maps[i]['steuernummer'],
+        nachName: maps[i]['nachName'],
+        name: maps[i]['name'],
+        strasse: maps[i]['strasse'],
+        hausnummer: maps[i]['hausnummer'],
+        plz: maps[i]['plz'],
+        ort: maps[i]['ort'],
+        iban: maps[i]['iban'],
+        bic: maps[i]['bic'],
+        websiteUrl: maps[i]['websiteUrl'],
+        telefonNummer: maps[i]['telefonNummer'],
+        email: maps[i]['email'],
+      );
+    });
   }
 
   Future<bool> settingsAvailable() async {
