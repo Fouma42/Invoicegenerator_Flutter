@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:invoivoicegenerator/model/settings.dart';
 import 'package:invoivoicegenerator/pdf_view.dart';
+import 'package:pdf/pdf.dart%20';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'database_helper.dart';
-import 'dart:developer';
 import '../backEnd/database_access_impl.dart';
 import 'package:logger/logger.dart';
+import 'package:pdf/pdf.dart' as pdf;
+import '../backEnd/calculate.dart';
 
 class InvoicePage extends StatefulWidget {
-  String? name;
-  InvoicePage({Key? key, required this.name}) : super(key: key);
+  final String? name;
+  const InvoicePage({Key? key, required this.name}) : super(key: key);
 
   @override
-  InvoicePageState createState() => InvoicePageState(this.name);
+  InvoicePageState createState() => InvoicePageState();
 }
 
 class InvoicePageState extends State<InvoicePage> {
   final Logger logger = Logger();
-  late String? _name;
   late Settings user;
-
-  InvoicePageState(this._name);
 
   @override
   void initState() {
@@ -32,8 +30,7 @@ class InvoicePageState extends State<InvoicePage> {
 
   Future<void> _loadUserAvailability() async {
     DataBaseAccess dbaccess = DataBaseAccess();
-
-    user = await dbaccess.getUserByName(_name);
+    user = await dbaccess.getUserByName(widget.name);
     logger.d(user.name);
   }
 
@@ -49,155 +46,8 @@ class InvoicePageState extends State<InvoicePage> {
   final TextEditingController _pos1BetragController = TextEditingController();
   final TextEditingController _pos2BetragController = TextEditingController();
   final TextEditingController _pos3BetragController = TextEditingController();
-  String userName = "";
-  String userSurnName = "";
-  String userStreet = "";
-  String userNumber = "";
-  String userPLZ = "";
-  String userOrt = "";
-  String useSteuernummer = "";
-  String userIban = "";
-  String userBIC = "";
-  String userWebUrl = "";
-  String userTelefon = "";
-  String userEmail = "";
-
-  Future<File> _generatePDF() async {
-    final DatabaseHelper dbHelper = DatabaseHelper.instance;
-    List<Map<String, dynamic>> settingsList = await dbHelper.getAllSettings();
-
-    // Ausgabe der abgerufenen Einstellungen
-    for (var settings in settingsList) {
-      userName = settings['name'];
-      userSurnName = settings['nachName'];
-      userStreet = settings['strasse'];
-      userNumber = settings['hausnummer'];
-      userPLZ = settings['plz'];
-      userOrt = settings['ort'];
-      useSteuernummer = settings['steuernummer'];
-      userIban = settings['iban'];
-      userBIC = settings['bic'];
-      userWebUrl = settings['websiteUrl'];
-      userTelefon = settings['telefonNummer'];
-      userEmail = settings['email'];
-      log('bin in for');
-      log(useSteuernummer);
-      stderr.writeln('print me');
-    }
-
-    final pdf = pw.Document();
-
-    pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          return pw.Column(
-            children: [
-              //Rechnungsersteller adresse
-              pw.Row(
-                children: [
-                  pw.Text(user.name),
-                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text(user.nachName),
-                ],
-              ),
-              pw.Row(
-                children: [
-                  pw.Text(user.strasse),
-                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text(user.hausnummer),
-                ],
-              ),
-              pw.Row(
-                children: [
-                  pw.Text(user.plz),
-                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text(user.ort),
-                ],
-              ),
-              pw.Row(
-                children: [
-                  pw.Text(user.telefonNummer),
-                ],
-              ),
-              pw.Row(
-                children: [
-                  pw.Text(user.email),
-                ],
-              ),
-              pw.Row(
-                children: [
-                  pw.Text(user.websiteUrl),
-                ],
-              ),
-
-              //Ab hier kundenadresse
-              pw.Padding(padding: const pw.EdgeInsets.only(top: 25.0)),
-              pw.Row(
-                children: [
-                  pw.Text(_nameController.text),
-                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text(_nachnameController.text),
-                ],
-              ),
-              pw.Row(
-                children: [
-                  pw.Text(_strasseController.text),
-                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text(_hausnummerController.text),
-                ],
-              ),
-              pw.Row(
-                children: [
-                  pw.Text(_plzController.text),
-                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text(_ortController.text),
-                ],
-              ),
-
-              pw.Row(
-                children: [
-                  pw.Text(_pos1Controller.text),
-                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text(_pos1BetragController.text),
-                ],
-              ),
-              pw.Row(
-                children: [
-                  pw.Text(_pos2Controller.text),
-                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text(_pos2BetragController.text),
-                ],
-              ),
-              pw.Row(
-                children: [
-                  pw.Text(_pos3Controller.text),
-                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text(_pos3BetragController.text),
-                ],
-              ),
-            ],
-          );
-        },
-      ),
-    );
-
-    final output = await getTemporaryDirectory();
-    final file = File('${output.path}/invoice.pdf');
-    await file.writeAsBytes(await pdf.save());
-    // Fluttertoast.showToast(msg: 'PDF erstellt: ${file.path}');
-    return file;
-  }
-
-  gotTo(file) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PdfViewerPage(
-          pdfPath: file.path,
-        ),
-      ),
-    );
-  }
+  final int total = 0;
+  final Calculate _calculate = Calculate();
 
   @override
   Widget build(BuildContext context) {
@@ -387,17 +237,158 @@ class InvoicePageState extends State<InvoicePage> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () async {
-                  // Capture the BuildContext outside the async block
                   final File file = await _generatePDF();
-
-                  // Use the captured BuildContext inside the async block
-
-                  gotTo(file);
+                  logger.d(file);
+                  navigateToPdfViewerPage(file);
                 },
                 child: const Text('Save Settings'),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Future<File> _generatePDF() async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            children: [
+              //Rechnungsersteller adresse
+              pw.Row(
+                children: [
+                  pw.Text(user.name),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text(user.nachName),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text(user.strasse),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text(user.hausnummer),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text(user.plz),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text(user.ort),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text(user.telefonNummer),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text(user.email),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text(user.websiteUrl),
+                ],
+              ),
+
+              //Ab hier kundenadresse
+              pw.Padding(padding: const pw.EdgeInsets.only(top: 60.0)),
+              pw.Row(
+                children: [
+                  pw.Text(_nameController.text),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text(_nachnameController.text),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text(_strasseController.text),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text(_hausnummerController.text),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Text(_plzController.text),
+                  pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
+                  pw.Text(_ortController.text),
+                ],
+              ),
+              pw.Padding(
+                padding: const pw.EdgeInsets.only(top: 150.0),
+              ),
+              pw.Container(
+                padding: const pw.EdgeInsets.all(
+                    10.0), // Fügen Sie hier das gewünschte Padding hinzu
+                decoration: pw.BoxDecoration(
+                  border: pw.Border.all(),
+
+                  borderRadius:
+                      pw.BorderRadius.circular(10.0), // Radius der Ecken
+                ),
+                child: pw.Column(
+                  children: [
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Text(_pos1Controller.text),
+                        pw.Text(_pos1BetragController.text),
+                      ],
+                    ),
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Text(_pos2Controller.text),
+                        pw.Text(_pos2BetragController.text),
+                      ],
+                    ),
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Text(_pos3Controller.text),
+                        pw.Text(_pos3BetragController.text),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              pw.Container(
+                padding: const pw.EdgeInsets.all(10.0),
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('Gesamtbetrag'),
+                    pw.Text(_calculate.calculateTotalAmount(
+                        int.parse(_pos1BetragController.text),
+                        int.parse(_pos2BetragController.text),
+                        int.parse(_pos3BetragController.text))),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    final output = await getTemporaryDirectory();
+    final file = File('${output.path}/invoice.pdf');
+    await file.writeAsBytes(await pdf.save());
+    // Fluttertoast.showToast(msg: 'PDF erstellt: ${file.path}');
+    return file;
+  }
+
+  navigateToPdfViewerPage(file) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PdfViewerPage(
+          pdfPath: file.path,
         ),
       ),
     );

@@ -56,25 +56,40 @@ class _UserSelectionState extends State<UserSelection> {
             padding: const EdgeInsets.only(top: 150),
             child: DropdownButtonFormField<String>(
               padding: const EdgeInsets.all(14.0),
-              value: _selectedName,
-              items: _options.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
+              value: _selectedName ?? _options.first,
+              items: [
+                DropdownMenuItem<String>(
+                  value: _options.first,
                   child: Text(
-                    value,
+                    _options.first,
                     style: const TextStyle(
                       color: Colors.blue,
                     ),
                   ),
-                );
-              }).toList(),
+                ),
+                ..._options
+                    .skip(1)
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      style: const TextStyle(
+                        color: Colors.blue,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ],
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedName = newValue;
                 });
               },
               decoration: const InputDecoration(
-                  labelText: 'Username', border: OutlineInputBorder()),
+                labelText: 'Username',
+                border: OutlineInputBorder(),
+              ),
               validator: (value) {
                 if (value == null) {
                   return 'Bitte wählen Sie Ihren Namen aus';
