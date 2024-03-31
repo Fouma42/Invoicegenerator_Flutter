@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:invoivoicegenerator/invoice.dart';
 import '../database_helper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -204,6 +205,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               TextFormField(
                 controller: _steuernummerController,
+                keyboardType: TextInputType.number,
                 decoration: const InputDecoration(labelText: 'Steuernummer'),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -212,6 +214,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   return null;
                 },
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly // Nur Zahlen zulassen
+                ],
               ),
               TextFormField(
                 controller: _ibanController,
@@ -257,11 +262,22 @@ class _SettingsPageState extends State<SettingsPage> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () async {
-                  setState(() {
-                    _saveSettings();
-                  });
+                  if (_formKey.currentState!.validate()) {
+                    setState(() {
+                      _saveSettings();
+                    });
 
-                  navigateToInvoicePage();
+                    navigateToInvoicePage();
+                  } else {
+                    // Zeigen Sie eine Benachrichtigung an, dass alle Felder ausgefüllt sein müssen.
+                    Fluttertoast.showToast(
+                        msg: "Bitte füllen Sie alle Felder aus",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+                  }
                 },
                 child: const Text('Save Settings'),
               ),

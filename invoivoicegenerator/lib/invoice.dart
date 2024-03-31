@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:invoivoicegenerator/model/settings.dart';
 import 'package:invoivoicegenerator/pdf_view.dart';
-import 'package:pdf/pdf.dart%20';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import '../backEnd/database_access_impl.dart';
 import 'package:logger/logger.dart';
-import 'package:pdf/pdf.dart' as pdf;
 import '../backEnd/calculate.dart';
 
 class InvoicePage extends StatefulWidget {
@@ -29,8 +28,11 @@ class InvoicePageState extends State<InvoicePage> {
   }
 
   Future<void> _loadUserAvailability() async {
+    logger.d('Bindavor');
+    logger.d(widget.name);
     DataBaseAccess dbaccess = DataBaseAccess();
     user = await dbaccess.getUserByName(widget.name);
+
     logger.d(user.name);
   }
 
@@ -155,8 +157,12 @@ class InvoicePageState extends State<InvoicePage> {
                       ),
                       child: TextField(
                         controller: _pos1BetragController,
+                        keyboardType: TextInputType.number,
                         textAlign: TextAlign.right,
                         decoration: const InputDecoration(labelText: 'Betrag'),
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                       ),
                     ),
                   ),
@@ -191,8 +197,12 @@ class InvoicePageState extends State<InvoicePage> {
                       ),
                       child: TextField(
                         controller: _pos2BetragController,
+                        keyboardType: TextInputType.number,
                         textAlign: TextAlign.right,
                         decoration: const InputDecoration(labelText: 'Betrag'),
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                       ),
                     ),
                   ),
@@ -227,8 +237,17 @@ class InvoicePageState extends State<InvoicePage> {
                       ),
                       child: TextField(
                         controller: _pos3BetragController,
-                        textAlign: TextAlign.right,
-                        decoration: const InputDecoration(labelText: 'Betrag'),
+                        keyboardType:
+                            TextInputType.number, // Nur Zahlen zulassen
+                        textAlign:
+                            TextAlign.right, // Text rechtsbündig ausrichten
+                        decoration: const InputDecoration(
+                          labelText: 'Betrag',
+                        ),
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter
+                              .digitsOnly // Nur Zahlen zulassen
+                        ],
                       ),
                     ),
                   ),
@@ -237,11 +256,11 @@ class InvoicePageState extends State<InvoicePage> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () async {
-                  final File file = await _generatePDF();
+                  final File file = await _generatePDF(user);
                   logger.d(file);
                   navigateToPdfViewerPage(file);
                 },
-                child: const Text('Save Settings'),
+                child: const Text('PDF Erzeugen'),
               ),
             ],
           ),
@@ -250,7 +269,7 @@ class InvoicePageState extends State<InvoicePage> {
     );
   }
 
-  Future<File> _generatePDF() async {
+  Future<File> _generatePDF(Settings user) async {
     final pdf = pw.Document();
 
     pdf.addPage(
@@ -364,9 +383,15 @@ class InvoicePageState extends State<InvoicePage> {
                   children: [
                     pw.Text('Gesamtbetrag'),
                     pw.Text(_calculate.calculateTotalAmount(
-                        int.parse(_pos1BetragController.text),
-                        int.parse(_pos2BetragController.text),
-                        int.parse(_pos3BetragController.text))),
+                        int.parse(_pos1BetragController.text.isEmpty
+                            ? '0'
+                            : _pos1BetragController.text),
+                        int.parse(_pos2BetragController.text.isEmpty
+                            ? '0'
+                            : _pos2BetragController.text),
+                        int.parse(_pos3BetragController.text.isEmpty
+                            ? '0'
+                            : _pos3BetragController.text))),
                   ],
                 ),
               ),

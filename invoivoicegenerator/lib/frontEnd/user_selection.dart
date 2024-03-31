@@ -11,7 +11,7 @@ class UserSelection extends StatefulWidget {
   const UserSelection({Key? key, required this.options}) : super(key: key);
 
   @override
-  State<UserSelection> createState() => _UserSelectionState(options);
+  State<UserSelection> createState() => _UserSelectionState();
 }
 
 class _UserSelectionState extends State<UserSelection> {
@@ -22,8 +22,6 @@ class _UserSelectionState extends State<UserSelection> {
   late List<String> _options;
   final Logger logger = Logger();
 
-  _UserSelectionState(this._options);
-
   @override
   void initState() {
     super.initState();
@@ -33,6 +31,8 @@ class _UserSelectionState extends State<UserSelection> {
   Future<void> _loadUserAvailability() async {
     DataBaseAccess logic = DataBaseAccess();
     setState(() {
+      _options = widget.options;
+      _selectedName = _options.first;
       _userIsAvailable = logic.userAvailabel();
       _userCount = logic.getUserCount();
     });
