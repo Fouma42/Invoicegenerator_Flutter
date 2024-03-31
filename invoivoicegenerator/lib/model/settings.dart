@@ -25,4 +25,21 @@ class Settings {
       required this.websiteUrl,
       required this.telefonNummer,
       required this.email});
+
+  factory Settings.fromMap(Map<String, dynamic> map) {
+    return Settings(
+      steuernummer: map['steuernummer'],
+      nachName: map['nachName'],
+      name: map['name'],
+      strasse: map['strasse'],
+      hausnummer: map['hausnummer'],
+      plz: map['plz'],
+      ort: map['ort'],
+      iban: map['iban'],
+      bic: map['bic'],
+      websiteUrl: map['websiteUrl'],
+      telefonNummer: map['telefonNummer'],
+      email: map['email'],
+    );
+  }
 }

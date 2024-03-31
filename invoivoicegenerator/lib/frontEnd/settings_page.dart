@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:invoivoicegenerator/invoice.dart';
 import '../database_helper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../backEnd/settings_page_logic.dart';
+import '../backEnd/database_access_impl.dart';
 import '../model/settings.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -26,23 +26,13 @@ class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _ibanController = TextEditingController();
   final TextEditingController _bicController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  String? _selectedName;
-  final List<String> _options = [];
 
   void setUserSettings() async {
-    SettingsPageLogic settingsLogic = SettingsPageLogic();
-    List<Settings> settings = await settingsLogic.getSettings();
+    DataBaseAccess settingsLogic = DataBaseAccess();
+    List<Settings> userSettings = await settingsLogic.getSettings();
 
-    setState(() {
-      for (var s in settings) {
-        _options.add(s.name);
-      }
-      if (_options.isNotEmpty) {
-        _selectedName = _options.first;
-      }
-    });
-
-    for (var s in settings) {
+    for (var s in userSettings) {
+      _nameController.text = s.name;
       _steuernummerController.text = s.steuernummer;
       _nameController.text = s.name;
       _nachNameController.text = s.nachName;
@@ -56,14 +46,11 @@ class _SettingsPageState extends State<SettingsPage> {
       _bicController.text = s.bic;
       _emailController.text = s.email;
     }
-    if (_options.isNotEmpty) {
-      _selectedName = _options.first;
-    }
   }
 
   void _saveSettings() async {
     if (_formKey.currentState!.validate()) {
-      String name = _selectedName.toString();
+      String name = _nameController.text.trim();
       String nachName = _nachNameController.text.trim();
       String strasse = _strasseController.text.trim();
       String hausnummer = _hausNummerController.text.trim();
@@ -107,7 +94,10 @@ class _SettingsPageState extends State<SettingsPage> {
   navigateToInvoicePage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const InvoicePage()),
+      MaterialPageRoute(
+          builder: (context) => InvoicePage(
+                name: _nameController.text,
+              )),
     );
   }
 
@@ -123,23 +113,12 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              DropdownButtonFormField<String>(
-                value: _selectedName,
-                items: _options.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedName = newValue;
-                  });
-                },
+              TextFormField(
+                controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Name'),
                 validator: (value) {
-                  if (value == null) {
-                    return 'Bitte wählen Sie Ihren Namen aus';
+                  if (value!.isEmpty) {
+                    return 'Bitte geben Sie Ihren Namen ein';
                   }
                   return null;
                 },
@@ -278,7 +257,10 @@ class _SettingsPageState extends State<SettingsPage> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () async {
-                  _saveSettings();
+                  setState(() {
+                    _saveSettings();
+                  });
+
                   navigateToInvoicePage();
                 },
                 child: const Text('Save Settings'),
@@ -304,7 +286,6 @@ class _SettingsPageState extends State<SettingsPage> {
     _telefonnummerController.dispose();
     _websiteUrlController.dispose();
     _ibanController.dispose();
-    _options.clear();
     super.dispose();
   }
 }

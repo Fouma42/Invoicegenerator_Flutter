@@ -1,19 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:invoivoicegenerator/model/settings.dart';
 import 'package:invoivoicegenerator/pdf_view.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'database_helper.dart';
 import 'dart:developer';
+import '../backEnd/database_access_impl.dart';
+import 'package:logger/logger.dart';
 
 class InvoicePage extends StatefulWidget {
-  const InvoicePage({Key? key}) : super(key: key);
+  String? name;
+  InvoicePage({Key? key, required this.name}) : super(key: key);
 
   @override
-  InvoicePageState createState() => InvoicePageState();
+  InvoicePageState createState() => InvoicePageState(this.name);
 }
 
 class InvoicePageState extends State<InvoicePage> {
+  final Logger logger = Logger();
+  late String? _name;
+  late Settings user;
+
+  InvoicePageState(this._name);
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserAvailability();
+  }
+
+  Future<void> _loadUserAvailability() async {
+    DataBaseAccess dbaccess = DataBaseAccess();
+
+    user = await dbaccess.getUserByName(_name);
+    logger.d(user.name);
+  }
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _nachnameController = TextEditingController();
   final TextEditingController _strasseController = TextEditingController();
@@ -72,38 +95,38 @@ class InvoicePageState extends State<InvoicePage> {
               //Rechnungsersteller adresse
               pw.Row(
                 children: [
-                  pw.Text(userName),
+                  pw.Text(user.name),
                   pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text(userSurnName),
+                  pw.Text(user.nachName),
                 ],
               ),
               pw.Row(
                 children: [
-                  pw.Text(userStreet),
+                  pw.Text(user.strasse),
                   pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text(userNumber),
+                  pw.Text(user.hausnummer),
                 ],
               ),
               pw.Row(
                 children: [
-                  pw.Text(userPLZ),
+                  pw.Text(user.plz),
                   pw.Padding(padding: const pw.EdgeInsets.only(right: 3.0)),
-                  pw.Text(userOrt),
+                  pw.Text(user.ort),
                 ],
               ),
               pw.Row(
                 children: [
-                  pw.Text(userTelefon),
+                  pw.Text(user.telefonNummer),
                 ],
               ),
               pw.Row(
                 children: [
-                  pw.Text(userEmail),
+                  pw.Text(user.email),
                 ],
               ),
               pw.Row(
                 children: [
-                  pw.Text(userWebUrl),
+                  pw.Text(user.websiteUrl),
                 ],
               ),
 

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'frontEnd/settings_page.dart';
 import 'database_helper.dart';
-import 'frontEnd/add_new_user.dart';
 import '../frontEnd/start_seite.dart';
 
 void main() async {
