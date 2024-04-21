@@ -43,6 +43,7 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Nutzer Auswahl')),
       body: Center(
           child: Column(
         children: [
@@ -50,7 +51,7 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
             padding: const EdgeInsets.only(left: 5.0, top: 150),
             alignment: Alignment.center,
             child: const Text(
-              'Mit welchem User soll die Rechnung erstellt werden?',
+              'Bitte wählen Sie einen User aus.',
               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
             ),
           ),
@@ -100,14 +101,36 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
               },
             ),
           ),
-          const Padding(padding: EdgeInsets.only(top: 80)),
+          const Padding(padding: EdgeInsets.only(top: 20)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () {},
+                child: const Text(
+                  'User bearbeiten',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.blue),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {},
+                child: const Text(
+                  'User löschen',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.blue),
+                ),
+              ),
+            ],
+          ),
+          const Padding(padding: EdgeInsets.only(top: 30)),
           ElevatedButton(
             onPressed: () async {
               navigateToInvoicePage();
             },
             style: ButtonStyle(
               minimumSize: MaterialStateProperty.all(
-                  const Size(180, 60)), // Ändere die Größe hier
+                  const Size(180, 30)), // Ändere die Größe hier
               padding: MaterialStateProperty.all(const EdgeInsets.all(16)),
               // Optional: Ändere das Padding
             ),

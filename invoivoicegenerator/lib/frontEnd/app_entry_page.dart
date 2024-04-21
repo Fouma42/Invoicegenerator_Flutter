@@ -79,45 +79,15 @@ class _AppEntryPaqgeState extends State<AppEntryPaqge> {
                       ElevatedButton(
                         onPressed: () {
                           _loadUserAvailability();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) {
-                              return FutureBuilder<int?>(
-                                future: _userCount,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const CircularProgressIndicator();
-                                  } else if (snapshot.hasError) {
-                                    return Text('Error: ${snapshot.error}');
-                                  } else {
-                                    if (snapshot.data! > 1) {
-                                      return FutureBuilder<List<String>>(
-                                        future: _userNames,
-                                        builder: (context, snapshot) {
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.waiting) {
-                                            return const CircularProgressIndicator();
-                                          } else if (snapshot.hasError) {
-                                            return Text(
-                                                'Error: ${snapshot.error}');
-                                          } else {
-                                            return UserSelectionPage(
-                                                options: snapshot.data ?? []);
-                                          }
-                                        },
-                                      );
-                                    } else {
-                                      final int? userCount = snapshot.data;
-                                      logger
-                                          .d('Anzahl der Benutzer: $userCount');
-                                      return const AddNewUserPage();
-                                    }
-                                  }
-                                },
-                              );
-                            }),
-                          );
+                          navigateToUserSelectionPageIfUserAreAvailable();
+                        },
+                        child: const Text('User bearbeiten/Löschen'),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          _loadUserAvailability();
+                          navigateToUserSelectionPageIfUserAreAvailable();
                         },
                         child: const Text('Rechnung erstellen'),
                       ),
@@ -143,6 +113,43 @@ class _AppEntryPaqgeState extends State<AppEntryPaqge> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const AddNewUserPage()),
+    );
+  }
+
+  navigateToUserSelectionPageIfUserAreAvailable() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return FutureBuilder<int?>(
+          future: _userCount,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              if (snapshot.data! > 1) {
+                return FutureBuilder<List<String>>(
+                  future: _userNames,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return UserSelectionPage(options: snapshot.data ?? []);
+                    }
+                  },
+                );
+              } else {
+                final int? userCount = snapshot.data;
+                logger.d('Anzahl der Benutzer: $userCount');
+                return const AddNewUserPage();
+              }
+            }
+          },
+        );
+      }),
     );
   }
 }
