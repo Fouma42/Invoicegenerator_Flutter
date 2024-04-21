@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:invoivoicegenerator/frontEnd/user_selection.dart';
-import '../backEnd/database_access_impl.dart';
-import 'package:invoivoicegenerator/invoice.dart';
-import '../frontEnd/settings_page.dart';
+import 'package:invoivoicegenerator/data_base/database_access_impl.dart';
+import 'package:invoivoicegenerator/frontEnd/user_selection_page.dart';
+
+import 'add_new_user.dart';
 import 'package:logger/logger.dart';
 
-class StartSeite extends StatefulWidget {
-  const StartSeite({Key? key}) : super(key: key);
+class AppEntryPaqge extends StatefulWidget {
+  const AppEntryPaqge({Key? key}) : super(key: key);
   @override
-  State<StartSeite> createState() => _StartSeiteState();
+  State<AppEntryPaqge> createState() => _AppEntryPaqgeState();
 }
 
-class _StartSeiteState extends State<StartSeite> {
+class _AppEntryPaqgeState extends State<AppEntryPaqge> {
   late Future<bool> _userIsAvailable;
   late Future<int?> _userCount;
   late Future<List<String>> _userNames;
@@ -102,7 +102,7 @@ class _StartSeiteState extends State<StartSeite> {
                                             return Text(
                                                 'Error: ${snapshot.error}');
                                           } else {
-                                            return UserSelection(
+                                            return UserSelectionPage(
                                                 options: snapshot.data ?? []);
                                           }
                                         },
@@ -111,7 +111,7 @@ class _StartSeiteState extends State<StartSeite> {
                                       final int? userCount = snapshot.data;
                                       logger
                                           .d('Anzahl der Benutzer: $userCount');
-                                      return const SettingsPage();
+                                      return const AddNewUserPage();
                                     }
                                   }
                                 },
@@ -142,7 +142,7 @@ class _StartSeiteState extends State<StartSeite> {
   navigateToUserPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const SettingsPage()),
+      MaterialPageRoute(builder: (context) => const AddNewUserPage()),
     );
   }
 }

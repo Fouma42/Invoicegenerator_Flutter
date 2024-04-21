@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:logger/web.dart';
 
-class Calculate {
+class InvoiceCalculator {
   Logger logger = Logger();
 
   String calculateTotalAmount(int amount1, int amount2, int amount3) {

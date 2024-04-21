@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:invoivoicegenerator/data_base/database_access_impl.dart';
+import 'package:invoivoicegenerator/frontEnd/add_new_user.dart';
 import 'package:invoivoicegenerator/model/settings.dart';
-import '../backEnd/database_access_impl.dart';
-import 'package:invoivoicegenerator/invoice.dart';
-import '../frontEnd/settings_page.dart';
+
+import 'package:invoivoicegenerator/frontEnd/invoice_creation_page.dart';
+
 import 'package:logger/logger.dart';
 
-class UserSelection extends StatefulWidget {
+class UserSelectionPage extends StatefulWidget {
   final List<String> options;
 
-  const UserSelection({Key? key, required this.options}) : super(key: key);
+  const UserSelectionPage({Key? key, required this.options}) : super(key: key);
 
   @override
-  State<UserSelection> createState() => _UserSelectionState();
+  State<UserSelectionPage> createState() => _UserSelectionPageState();
 }
 
-class _UserSelectionState extends State<UserSelection> {
+class _UserSelectionPageState extends State<UserSelectionPage> {
   late Future<bool> _userIsAvailable;
   late Future<int?> _userCount;
   late Future<Settings> _user;
@@ -123,7 +125,7 @@ class _UserSelectionState extends State<UserSelection> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => InvoicePage(
+          builder: (context) => InvoiceCreationPage(
                 name: _selectedName,
               )),
     );
@@ -132,7 +134,7 @@ class _UserSelectionState extends State<UserSelection> {
   navigateToUserPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const SettingsPage()),
+      MaterialPageRoute(builder: (context) => const AddNewUserPage()),
     );
   }
 }

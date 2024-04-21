@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import '../model/settings.dart';
+import '../../model/settings.dart';
 import 'package:logger/logger.dart';
 
 class DatabaseHelper {

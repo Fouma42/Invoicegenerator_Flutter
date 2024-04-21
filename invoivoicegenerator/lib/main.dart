@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'database_helper.dart';
-import '../frontEnd/start_seite.dart';
+import 'data_base/database_helper.dart';
+import 'frontEnd/app_entry_page.dart';
 
 void main() async {
   WidgetsFlutterBinding
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       // home: settingsAvailable ? const InvoicePage() : const SettingsPage(),
-      home: const StartSeite(),
+      home: const AppEntryPaqge(),
     );
   }
 }

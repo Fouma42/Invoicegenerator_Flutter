@@ -5,19 +5,19 @@ import 'package:invoivoicegenerator/pdf_view.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import '../backEnd/database_access_impl.dart';
+import '../data_base/database_access_impl.dart';
 import 'package:logger/logger.dart';
-import '../backEnd/calculate.dart';
+import '../backEnd/invoice_calcultor.dart';
 
-class InvoicePage extends StatefulWidget {
+class InvoiceCreationPage extends StatefulWidget {
   final String? name;
-  const InvoicePage({Key? key, required this.name}) : super(key: key);
+  const InvoiceCreationPage({Key? key, required this.name}) : super(key: key);
 
   @override
-  InvoicePageState createState() => InvoicePageState();
+  InvoiceCreationPageState createState() => InvoiceCreationPageState();
 }
 
-class InvoicePageState extends State<InvoicePage> {
+class InvoiceCreationPageState extends State<InvoiceCreationPage> {
   final Logger logger = Logger();
   late Settings user;
 
@@ -49,7 +49,7 @@ class InvoicePageState extends State<InvoicePage> {
   final TextEditingController _pos2BetragController = TextEditingController();
   final TextEditingController _pos3BetragController = TextEditingController();
   final int total = 0;
-  final Calculate _calculate = Calculate();
+  final InvoiceCalculator _calculate = InvoiceCalculator();
 
   @override
   Widget build(BuildContext context) {

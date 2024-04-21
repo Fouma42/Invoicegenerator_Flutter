@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:invoivoicegenerator/invoice.dart';
-import '../database_helper.dart';
+import 'package:invoivoicegenerator/frontEnd/invoice_creation_page.dart';
+import '../data_base/database_helper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../backEnd/database_access_impl.dart';
-import '../model/settings.dart';
+import 'package:logger/logger.dart';
 
-class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+class AddNewUserPage extends StatefulWidget {
+  const AddNewUserPage({Key? key}) : super(key: key);
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
+  State<AddNewUserPage> createState() => _AddNewUserPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _AddNewUserPageState extends State<AddNewUserPage> {
+  final Logger logger = Logger();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _nachNameController = TextEditingController();
@@ -27,27 +27,6 @@ class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _ibanController = TextEditingController();
   final TextEditingController _bicController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-
-  void setUserSettings() async {
-    DataBaseAccess settingsLogic = DataBaseAccess();
-    List<Settings> userSettings = await settingsLogic.getSettings();
-
-    for (var s in userSettings) {
-      _nameController.text = s.name;
-      _steuernummerController.text = s.steuernummer;
-      _nameController.text = s.name;
-      _nachNameController.text = s.nachName;
-      _strasseController.text = s.strasse;
-      _hausNummerController.text = s.hausnummer;
-      _ortController.text = s.ort;
-      _plzController.text = s.plz;
-      _telefonnummerController.text = s.telefonNummer;
-      _websiteUrlController.text = s.websiteUrl;
-      _ibanController.text = s.iban;
-      _bicController.text = s.bic;
-      _emailController.text = s.email;
-    }
-  }
 
   void _saveSettings() async {
     if (_formKey.currentState!.validate()) {
@@ -96,7 +75,7 @@ class _SettingsPageState extends State<SettingsPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => InvoicePage(
+          builder: (context) => InvoiceCreationPage(
                 name: _nameController.text,
               )),
     );
@@ -104,7 +83,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    setUserSettings();
     return Scaffold(
       appBar: AppBar(title: const Text('First settings')),
       body: SingleChildScrollView(
